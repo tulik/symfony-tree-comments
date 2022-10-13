@@ -82,7 +82,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function getUserIdentifier(): string
     {
-        return (string) $this->email;
+        return (string) $this->name;
     }
 
     /**
@@ -170,7 +170,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if (!$this->comment->contains($comment)) {
             $this->comment[] = $comment;
-            $comment->setUserId($this);
+            $comment->setUser($this);
         }
 
         return $this;
@@ -180,8 +180,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if ($this->comment->removeElement($comment)) {
             // set the owning side to null (unless already changed)
-            if ($comment->getUserId() === $this) {
-                $comment->setUserId(null);
+            if ($comment->getUser() === $this) {
+                $comment->setUser(null);
             }
         }
 

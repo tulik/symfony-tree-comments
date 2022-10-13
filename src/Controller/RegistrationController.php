@@ -33,15 +33,13 @@ class RegistrationController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Hash the new user password
+
             $hashedPassword = $this->passwordHasher->hashPassword($user, $user->getPassword());
 
             $user->setPassword($hashedPassword);
 
-            // Set user role
             $user->setRoles(['ROLE_USER']);
 
-            // Save
             $em = $doctrine->getManager();
             $em->persist($user);
             $em->flush();

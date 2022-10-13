@@ -2,11 +2,11 @@
 
 namespace App\Entity;
 
-use App\Repository\CommentsRepository;
+use App\Repository\CommentRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass=CommentsRepository::class)
+ * @ORM\Entity(repositoryClass=CommentRepository::class)
  */
 class Comment
 {
@@ -20,7 +20,7 @@ class Comment
     /**
      * @ORM\Column(type="integer", nullable=true)
      */
-    private $parent_id;
+    private $parentId;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -30,13 +30,15 @@ class Comment
     /**
      * @ORM\Column(type="datetime")
      */
-    private $created_at;
+    private $createdAt;
 
     /**
-     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="comments")
+     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="comment")
      * @ORM\JoinColumn(nullable=false)
      */
-    private $user_id;
+    private $user;
+
+    private $children;
 
     public function getId(): ?int
     {
@@ -45,12 +47,12 @@ class Comment
 
     public function getParentId(): ?int
     {
-        return $this->parent_id;
+        return $this->parentId;
     }
 
-    public function setParentId(?int $parent_id): self
+    public function setParentId(?int $parentId): self
     {
-        $this->parent_id = $parent_id;
+        $this->parentId = $parentId;
 
         return $this;
     }
@@ -69,25 +71,36 @@ class Comment
 
     public function getCreatedAt(): ?\DateTimeInterface
     {
-        return $this->created_at;
+        return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTimeInterface $created_at): self
+    public function setCreatedAt(\DateTimeInterface $createdAt): self
     {
-        $this->created_at = $created_at;
+        $this->createdAt = $createdAt;
 
         return $this;
     }
 
-    public function getUserId(): ?User
+    public function getUser(): ?User
     {
-        return $this->user_id;
+        return $this->user;
     }
 
-    public function setUserId(?User $user_id): self
+    public function setUser(?User $user): self
     {
-        $this->user_id = $user_id;
+        $this->user = $user;
 
         return $this;
     }
+
+    public function setChildren(array $children):void
+    {
+        $this->children = $children;
+    }
+
+    public function getChildren(): ?array
+    {
+        return $this->children;
+    }
+
 }
