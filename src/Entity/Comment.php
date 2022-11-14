@@ -40,12 +40,12 @@ class Comment
 
     private $children;
 
-    public function getId(): ?int
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function getParentId(): ?int
+    public function getParentId():?int
     {
         return $this->parentId;
     }
@@ -93,7 +93,7 @@ class Comment
         return $this;
     }
 
-    public function setChildren(array $children):void
+    public function setChildren(array $children): void
     {
         $this->children = $children;
     }

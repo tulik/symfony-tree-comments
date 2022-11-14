@@ -3,10 +3,10 @@
 namespace App\Controller;
 
 use App\Entity\Comment;
-use App\Form\ChildCommentType;
 use App\Form\CommentType;
-use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -17,23 +17,23 @@ class CommentController extends AbstractController
     /**
      * @Route("/comments", name="app_comments")
      */
-    public function indexAction(Request $request, ManagerRegistry $doctrine): Response
+    public function indexAction(Request $request, EntityManagerInterface $entityManager): Response
     {
 
-        $allComments = $this->getComments($doctrine);
+        $allComments = $this->getComments($entityManager);
 
         $sortedComments = $this->sortComments($allComments);
 
-        return $this->addComment($request, $doctrine, $sortedComments);
+        return $this->addComment($request, $entityManager, $sortedComments, $_POST['parent_id'] ?? null);
 
     }
 
-    public function getComments(ManagerRegistry $doctrine): array
+    private function getComments(EntityManagerInterface $entityManager): array
     {
-        return $allComments = $doctrine->getRepository(\App\Entity\Comment::class)->findAll();
+        return $allComments = $entityManager->getRepository(Comment::class)->findAll();
     }
 
-    public function addComment(Request $request, ManagerRegistry $doctrine, array $sortedComments): Response
+    public function addComment(Request $request, EntityManagerInterface $entityManager, array $sortedComments, ?int $parentId = null): Response
     {
 
         $comment = new Comment();
@@ -50,7 +50,6 @@ class CommentController extends AbstractController
             $comment->setParentId($_POST['parent_id'] ?? null);
             $comment = $form->getData();
 
-            $entityManager = $doctrine->getManager();
             $entityManager->persist($comment);
             $entityManager->flush();
 
@@ -64,7 +63,7 @@ class CommentController extends AbstractController
 
     }
 
-    public function sortComments(array $commentaries, ?int $parentId = null): array
+    private function sortComments(array $commentaries, ?int $parentId = null): array
     {
 
         $arr = [];
@@ -83,4 +82,16 @@ class CommentController extends AbstractController
 
     }
 
+    /**
+     * @Route("/comments/{id}/like/{direction<up>}", methods="POST")
+     */
+    public function commentLike($id, $direction): Response
+    {
+        if ($direction === 'up'){
+            $currentLikesCount = rand(5, 10);
+        }
+
+        return $this->json(['likes' => $currentLikesCount]);
+
+    }
 }
