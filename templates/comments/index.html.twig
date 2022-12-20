@@ -28,10 +28,22 @@
                                                     <p class="small mb-0">
                                                         {{ comment.content }}
                                                     </p>
-                                                    <div class="js-likes">
-                                                        <a class="like-button" href="#" data-direction="up">♥</a>
-                                                        <span><span class="js-likes-total">6</span></span>
+                                                    <div class="js-likes-unlikes">
+                                                        <a href="{{ path('app_comment_like_unlike')}}"
+                                                           id="comment-like"
+                                                           data-entity-id="{{ comment.id }}"
+                                                           data-csrf-token="{{ csrf_token('comment' ~ comment.id)}}"
+                                                           data-liked="{{ isCommentAlreadyLiked == true ? '1' : '0'}}"
+                                                           class="btn-like">
+                                                        <i class="♡ {{ isCommentAlreadyLiked == true ? 'liked' : '' }}">
+                                                            {{ isCommentAlreadyLiked == true ? '♥' : '♡' }}
+                                                        </i>
+                                                        </a>
                                                     </div>
+{#                                                    <div class="js-likes">#}
+{#                                                        <a class="like-button" href="#" data-direction="up">♥</a>#}
+{#                                                        <span><span class="js-likes-total">6</span></span>#}
+{#                                                    </div>#}
                                                 </div>
                                                 {% for child in comment.children %}
                                                     <div class="d-flex flex-start mt-4">
@@ -52,10 +64,22 @@
                                                                 <p class="small mb-0">
                                                                     {{ child.content }}
                                                                 </p>
-                                                                <div class="js-child-likes">
-                                                                    <a class="like-button" href="#" data-direction="up">♥</a>
-                                                                    <span><span class="js-child-likes-total">4</span></span>
+                                                                <div class="js-likes-unlikes">
+                                                                    <a href="{{ path('app_comment_like_unlike')}}"
+                                                                       id="comment-like"
+                                                                       data-entity-id="{{ child.id }}"
+                                                                       data-csrf-token="{{ csrf_token('comment' ~ comment.id)}}"
+                                                                       data-liked="{{ isCommentAlreadyLiked == true ? '1' : '0'}}"
+                                                                       class="btn-like">
+                                                                        <i class="♡ {{ isCommentAlreadyLiked == true ? 'liked' : '' }}">
+                                                                            {{ isCommentAlreadyLiked == true ? '♥' : '♡' }}
+                                                                        </i>
+                                                                    </a>
                                                                 </div>
+{#                                                                <div class="js-child-likes">#}
+{#                                                                    <a class="like-button" href="#" data-direction="up">♥</a>#}
+{#                                                                    <span><span class="js-child-likes-total">4</span></span>#}
+{#                                                                </div>#}
                                                             </div>
                                                         </div>
                                                         <div class="ml-1">
@@ -66,7 +90,7 @@
                                                             </a>
                                                         </div>
                                                     </div>
-                                                    <div class="reply-form">
+                                                    <div class="child-reply-form">
                                                         <form method="post" class="m-2 pb-2"
                                                               style="display: none !important;"
                                                               id="formreply-{{ child.getId }}">
@@ -154,5 +178,5 @@
 
 {% block javascripts %}
     {{ parent() }}
-    <script src="{{ asset('js/comments_show.js') }}"></script>
+    <script src="{{ asset('js/comments_like_unlike.js') }}"></script>
 {% endblock %}

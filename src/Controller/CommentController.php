@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\Comment;
+use App\Entity\CommentLike;
+use App\Form\ChildCommentType;
 use App\Form\CommentType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -39,12 +41,12 @@ class CommentController extends AbstractController
         $comment = new Comment();
 
         $form = $this->createForm(CommentType::class, $comment);
-
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid() || $_SERVER['REQUEST_METHOD'] == 'POST') {
+        $user = $this->getUser();
 
-            $user = $this->getUser();
+        if ($form->isSubmitted() && $form->isValid() || $request->getMethod() === 'POST') {
+
             $comment->setUser($user);
             $comment->setCreatedAt(new \DateTime());
             $comment->setParentId($_POST['parent_id'] ?? null);
@@ -56,9 +58,13 @@ class CommentController extends AbstractController
             return $this->redirectToRoute('app_comments');
         }
 
+        $isCommentAlreadyLiked =
+            $entityManager->getRepository(CommentLike::class)->countByCommentAndUser($comment, $user);
+
         return $this->renderForm('comments/index.html.twig', [
             'form' => $form,
-            'sortedComments' => $sortedComments
+            'sortedComments' => $sortedComments,
+            'isCommentAlreadyLiked' => $isCommentAlreadyLiked,
         ]);
 
     }
