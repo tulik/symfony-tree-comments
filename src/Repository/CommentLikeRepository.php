@@ -51,9 +51,9 @@ class CommentLikeRepository extends ServiceEntityRepository
             ->setParameter('user', $user)
         ;
 
-//        return dd($qb->getQuery());
+//        return $qb->getQuery()->getSingleScalarResult();
 
-        return $qb->getQuery()->getSingleScalarResult();
+        return $qb->getQuery();
     }
 
 //    public function getLikesCount($comment)
