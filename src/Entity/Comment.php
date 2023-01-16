@@ -18,17 +18,17 @@ class Comment
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private $id;
+    private int $id;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
      */
-    private $parentId;
+    private ?int $parentId;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $content;
+    private string $content;
 
     /**
      * @ORM\Column(type="datetime")
@@ -39,7 +39,7 @@ class Comment
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="comment")
      * @ORM\JoinColumn(nullable=false)
      */
-    private $user;
+    private User $user;
 
     private $children;
 
@@ -47,6 +47,12 @@ class Comment
      * @ORM\OneToMany(targetEntity=CommentLike::class, mappedBy="comment")
      */
     private $commentLikes;
+
+    /**
+     * @ORM\Column(type="boolean", options={"default": 0})
+     */
+    private bool $isDeleted;
+
 
     public function __construct()
     {
@@ -145,5 +151,18 @@ class Comment
 
         return $this;
     }
+
+    public function isIsDeleted(): ?bool
+    {
+        return $this->isDeleted;
+    }
+
+    public function setIsDeleted(bool $isDeleted): self
+    {
+        $this->isDeleted = $isDeleted;
+
+        return $this;
+    }
+
 
 }

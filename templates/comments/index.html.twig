@@ -1,7 +1,6 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    {{ dump(sortedComments)}}
     <section class="gradient-custom">
         <div class="container my-2 py-2">
             <div class="row d-flex justify-content-center">
@@ -26,24 +25,24 @@
                                                         </p>
                                                     </div>
                                                     <p class="small mb-0">
+                                                        {% if comment.isDeleted == true %}
+                                                        <i> *This commentary was deleted by moderator* </i>
+                                                        {% else %}
                                                         {{ comment.content }}
                                                     </p>
                                                     <div class="js-likes-unlikes">
-                                                        <a href="{{ path('app_comment_like_unlike')}}"
+                                                        <a href="{{ path('app_comment_like_unlike') }}"
                                                            id="comment-like"
                                                            data-entity-id="{{ comment.id }}"
-                                                           data-csrf-token="{{ csrf_token('comment' ~ comment.id)}}"
-                                                           data-liked="{{ isCommentAlreadyLiked == true ? '1' : '0'}}"
+                                                           data-csrf-token="{{ csrf_token('comment' ~ comment.id) }}"
+                                                           data-liked="{{ isCommentAlreadyLiked == true ? '1' : '0' }}"
                                                            class="btn-like">
-                                                        <i class="♡ {{ isCommentAlreadyLiked == true ? 'liked' : '' }}">
-                                                            {{ isCommentAlreadyLiked == true ? '♥' : '♡' }}
-                                                        </i>
+                                                            <i class="♡ {{ isCommentAlreadyLiked == true ? 'liked' : '' }}">
+                                                                {{ isCommentAlreadyLiked == true ? '♥' : '♡' }}
+                                                            </i>
                                                         </a>
                                                     </div>
-{#                                                    <div class="js-likes">#}
-{#                                                        <a class="like-button" href="#" data-direction="up">♥</a>#}
-{#                                                        <span><span class="js-likes-total">6</span></span>#}
-{#                                                    </div>#}
+                                                    {% endif %}
                                                 </div>
                                                 {% for child in comment.children %}
                                                     <div class="d-flex flex-start mt-4">
@@ -62,24 +61,24 @@
                                                                     </p>
                                                                 </div>
                                                                 <p class="small mb-0">
+                                                                    {% if child.isDeleted == true %}
+                                                                    <i> *This commentary was deleted by moderator* </i>
+                                                                    {% else %}
                                                                     {{ child.content }}
                                                                 </p>
                                                                 <div class="js-likes-unlikes">
-                                                                    <a href="{{ path('app_comment_like_unlike')}}"
+                                                                    <a href="{{ path('app_comment_like_unlike') }}"
                                                                        id="comment-like"
                                                                        data-entity-id="{{ child.id }}"
-                                                                       data-csrf-token="{{ csrf_token('comment' ~ comment.id)}}"
-                                                                       data-liked="{{ isCommentAlreadyLiked == true ? '1' : '0'}}"
+                                                                       data-csrf-token="{{ csrf_token('comment' ~ comment.id) }}"
+                                                                       data-liked="{{ isCommentAlreadyLiked == true ? '1' : '0' }}"
                                                                        class="btn-like">
                                                                         <i class="♡ {{ isCommentAlreadyLiked == true ? 'liked' : '' }}">
                                                                             {{ isCommentAlreadyLiked == true ? '♥' : '♡' }}
                                                                         </i>
                                                                     </a>
                                                                 </div>
-{#                                                                <div class="js-child-likes">#}
-{#                                                                    <a class="like-button" href="#" data-direction="up">♥</a>#}
-{#                                                                    <span><span class="js-child-likes-total">4</span></span>#}
-{#                                                                </div>#}
+                                                                {% endif %}
                                                             </div>
                                                         </div>
                                                         <div class="ml-1">
@@ -88,17 +87,22 @@
                                                                 <i class="fas fa-reply fa-xs"></i>
                                                                 <span class="small"> reply</span>
                                                             </a>
+                                                            {% if is_granted('ROLE_ADMIN') %}
+                                                                <a href="{{ path('delete_comment',{'id': child.getId }) }}">
+                                                                    <i class="fas fa-reply fa-xs"></i>
+                                                                    <span class="small"> delete</span>
+                                                                </a>
+                                                            {% endif %}
                                                         </div>
                                                     </div>
-                                                    <div class="child-reply-form">
-                                                        <form method="post" class="m-2 pb-2"
-                                                              style="display: none !important;"
-                                                              id="formreply-{{ child.getId }}">
+                                                    {% set formAttrs = ['m2 pb-2', 'formreply-' ~ child.getId, 'display: none !important;'] %}
+                                                    {% if app.user == true %}
+                                                        <div class="reply-form">
+                                                            {{ form_start(form, {'attr': {'class': formAttrs.0, 'id': formAttrs.1, 'style': formAttrs.2 }}) }}
                                                             <div class="form-group">
                                                                 {{ form_label(form.content, 'Your Commentary') }}
                                                                 <textarea class="form-control"
-                                                                          name="{{ field_name(form.content) }}">@{{ child.user.userIdentifier}},
-                                                                </textarea>
+                                                                          name="{{ field_name(form.content) }}">@{{ comment.user.userIdentifier }}, </textarea>
                                                             </div>
                                                             <div class="submit">
                                                                 <input class="btn btn-primary"
@@ -106,19 +110,21 @@
                                                                        type="submit"
                                                                        value="Submit">
                                                             </div>
-                                                            <input type="hidden" name="parent_id" value="{{ comment.getId }}">
-                                                        </form>
-                                                    </div>
+                                                            <input type="hidden"
+                                                                   name="parent_id"
+                                                                   value="{{ comment.getId }}">
+                                                            {{ form_end(form) }}
+                                                        </div>
+                                                    {% endif %}
                                                 {% endfor %}
+                                                {% set formAttr = ['m2 pb-2', 'formreply-' ~ comment.getId, 'display: none !important;'] %}
                                                 {% if app.user == true %}
-                                                <div class="reply-form">
-                                                    <form method="post" class="m-2 pb-2"
-                                                          style="display: none !important;"
-                                                          id="formreply-{{ comment.getId }}">
+                                                    <div class="reply-form">
+                                                        {{ form_start(form, {'attr': {'class': formAttr.0, 'id': formAttr.1, 'style': formAttr.2 }}) }}
                                                         <div class="form-group">
                                                             {{ form_label(form.content, 'Your Commentary') }}
                                                             <textarea class="form-control"
-                                                                      name="{{ field_name(form.content) }}">@{{ comment.user.userIdentifier}}, </textarea>
+                                                                      name="{{ field_name(form.content) }}">@{{ comment.user.userIdentifier }}, </textarea>
                                                         </div>
                                                         <div class="submit">
                                                             <input class="btn btn-primary"
@@ -129,16 +135,21 @@
                                                         <input type="hidden"
                                                                name="parent_id"
                                                                value="{{ comment.getId }}">
-                                                    </form>
-                                                </div>
+                                                        {{ form_end(form) }}
+                                                    </div>
                                                 {% endif %}
                                             </div>
                                             <div class="ml-1">
-                                                <i class="fas fa-reply fa-xs"></i>
                                                 <a href="javascript:void(0)"
-                                                   onclick="document.getElementById('formreply-{{ comment.getId }}').style.display='';"><i
-                                                            class="fas fa-reply fa-xs"></i><span
-                                                            class="small">reply</span>
+                                                   onclick="document.getElementById('formreply-{{ comment.getId }}').style.display='';">
+                                                    <i class="fas fa-reply fa-xs"></i>
+                                                    <span class="small">reply</span>
+                                                    {% if is_granted('ROLE_ADMIN') %}
+                                                        <a href="{{ path('delete_comment',{'id': comment.getId }) }}">
+                                                            <i class="fas fa-reply fa-xs"></i>
+                                                            <span class="small"> delete</span>
+                                                        </a>
+                                                    {% endif %}
                                                 </a>
                                             </div>
                                         </div>
@@ -148,21 +159,21 @@
                             </div>
                         </div>
                         {% if app.user == true %}
-                        {{ form_start(form, {'attr': {'class': 'ml-4 mr-4 mb-4 pb-2'}}) }}
-                        <div class="form-group">
-                            {{ form_label(form.content, 'Your Commentary') }}
-                            <textarea class="form-control"
-                                      name="{{ field_name(form.content) }}) }}"
-                                      rows="2">
+                            {{ form_start(form, {'attr': {'class': 'ml-4 mr-4 mb-4 pb-2'}}) }}
+                            <div class="form-group">
+                                {{ form_label(form.content, 'Your Commentary') }}
+                                <textarea class="form-control"
+                                          name="{{ field_name(form.content) }}) }}"
+                                          rows="2">
                             </textarea>
-                        </div>
-                        <div class="submit">
-                            <input class="btn btn-primary"
-                                   name="{{ field_name(form.submit) }}"
-                                   type="submit"
-                                   value="Submit">
-                        </div>
-                        {{ form_end(form) }}
+                            </div>
+                            <div class="submit">
+                                <input class="btn btn-primary"
+                                       name="{{ field_name(form.submit) }}"
+                                       type="submit"
+                                       value="Submit">
+                            </div>
+                            {{ form_end(form) }}
                         {% endif %}
                         {% if app.user == false %}
                             <div class="text-center mb-2 pb-2">

@@ -35,6 +35,8 @@ class CommentController extends AbstractController
         if ($commentForm->isSubmitted() && $commentForm->isValid()) {
             $this->addComment($commentForm, $comment, $user, $entityManager, $_POST['parent_id'] ?? null);
 
+            $this->addFlash('success', 'Commentary added');
+
             return $this->redirectToRoute('app_comments');
         }
 
@@ -65,6 +67,7 @@ class CommentController extends AbstractController
         $comment->setUser($user);
         $comment->setCreatedAt(new \DateTime());
         $comment->setParentId($_POST['parent_id'] ?? null);
+        $comment->setIsDeleted(0);
         $comment = $form->getData();
 
         $entityManager->persist($comment);
@@ -72,15 +75,22 @@ class CommentController extends AbstractController
 
     }
 
-
-    public function commentForm(Request $request, Comment $comment): FormInterface
+    /**
+     * @Route("/comments/delete/{id}", name="delete_comment")
+     */
+    public function deleteComment($id, EntityManagerInterface $entityManager): Response
     {
+        //for Admins use only
+        $comment = $entityManager->getRepository(Comment::class)->find($id);
 
-        $form = $this->createForm(CommentType::class, $comment);
+        $comment->setIsDeleted(1);
 
-        $form->handleRequest($request);
+        $entityManager->persist($comment);
+        $entityManager->flush();
 
-        return $form;
+        $this->addFlash('success', 'Deleted successfully');
+
+        return $this->redirectToRoute('app_comments');
 
     }
 
@@ -100,6 +110,17 @@ class CommentController extends AbstractController
         }
 
         return $arr;
+
+    }
+
+    public function commentForm(Request $request, Comment $comment): FormInterface
+    {
+
+        $form = $this->createForm(CommentType::class, $comment);
+
+        $form->handleRequest($request);
+
+        return $form;
 
     }
 
