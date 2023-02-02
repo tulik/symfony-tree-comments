@@ -5,7 +5,6 @@ namespace App\Controller;
 use App\Entity\Comment;
 use App\Entity\CommentLike;
 use App\Entity\User;
-use App\Form\ChildCommentType;
 use App\Form\CommentType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -40,9 +39,6 @@ class CommentController extends AbstractController
             return $this->redirectToRoute('app_comments');
         }
 
-        $isCommentAlreadyLiked =
-            $entityManager->getRepository(CommentLike::class)->countByCommentAndUser($comment, $user);
-
         $allComments = $this->getComments($entityManager);
 
         $sortedComments = $this->sortComments($allComments);
@@ -50,7 +46,6 @@ class CommentController extends AbstractController
         return $this->renderForm('comments/index.html.twig',[
             'form' => $commentForm,
             'sortedComments' => $sortedComments,
-            'isCommentAlreadyLiked' => $isCommentAlreadyLiked
         ]);
 
     }
@@ -124,6 +119,22 @@ class CommentController extends AbstractController
 
     }
 
+//    /**
+//     * @Route("/comments/like/{id}", name="app_comments_like")
+//     */
+//    public function showArchived(Comment $comment, EntityManagerInterface $em)
+//    {
+//        $user = $this->getUser();
+//
+//        $isCommentAlreadyLiked =
+//            $em->getRepository(CommentLike::class)->countByCommentAndUser($comment, $user);
+//
+//        return $this->render('comment_like/index.html.twig', [
+//            'comment' => $comment,
+//            'isCommentAlreadyLiked' => $isCommentAlreadyLiked
+//        ]);
+//
+//    }
 //    public function addComment(Request $request, EntityManagerInterface $entityManager, array $sortedComments, ?int $parentId = null): Response
 //    {
 //

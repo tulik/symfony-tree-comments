@@ -47,7 +47,7 @@ class CommentLikeController extends AbstractController
                 if($commentAlreadyLiked){
                     $entityManager->remove($commentAlreadyLiked);
                     $entityManager->flush();
-                    return new JsonResponse();
+                    return new JsonResponse(['countLikes' => $comment->getCommentLikes()->count()]);
                     // if user likes the comment, add record to DB
                 } else{
                     $like = new CommentLike();
@@ -60,6 +60,6 @@ class CommentLikeController extends AbstractController
             }
 
         }
-        return new JsonResponse();
+        return new JsonResponse(['countLikes' => $like->getComment()->getCommentLikes()->count()]);
     }
 }

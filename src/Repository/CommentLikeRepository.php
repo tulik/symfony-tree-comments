@@ -5,6 +5,8 @@ namespace App\Repository;
 use App\Entity\CommentLike;
 use App\Entity\Comment;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -40,21 +42,20 @@ class CommentLikeRepository extends ServiceEntityRepository
         }
     }
 
-    public function countByCommentAndUser($comment, $user)
-    {
-
-        $qb = $this->createQueryBuilder('c')
-            ->select('COUNT(c)')
-            ->where('c.comment = :comment')
-            ->andWhere('c.user = :user')
-            ->setParameter('comment', $comment)
-            ->setParameter('user', $user)
-        ;
-
+//    public function countByCommentAndUser($comment, $user)
+//    {
+//
+//        $qb = $this->createQueryBuilder('cl')
+//            ->select('COUNT(cl)')
+//            ->where('cl.comment = :comment')
+//            ->andWhere('cl.user = :user')
+//            ->setParameter('comment', $comment)
+//            ->setParameter('user', $user)
+//        ;
+//
 //        return $qb->getQuery()->getSingleScalarResult();
-
-        return $qb->getQuery();
-    }
+//
+//    }
 
 //    public function getLikesCount($comment)
 //    {

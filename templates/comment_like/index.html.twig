@@ -3,18 +3,59 @@
 {% block title %}Hello CommentLikeController!{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
-
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
-
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code><a href="{{ 'C:/xampp/htdocs/symfony-tree-comments/src/Controller/CommentLikeController.php'|file_link(0) }}">src/Controller/CommentLikeController.php</a></code></li>
-        <li>Your template at <code><a href="{{ 'C:/xampp/htdocs/symfony-tree-comments/templates/comment_like/index.html.twig'|file_link(0) }}">templates/comment_like/index.html.twig</a></code></li>
-    </ul>
-</div>
+    <div class="container my-2 py-2">
+        <div class="row d-flex justify-content-center">
+            <div class="col-md-12 col-lg-10 col-xl-8 mb-4">
+                <div class="card">
+                    <div class="card-body p-4">
+                        <h3 class="text-center mb-4 pb-2">Tree Comments</h3>
+                        <div class="row">
+                            <div class="col">
+                                <div class="d-flex flex-start mb-4">
+                                    <img class="rounded-circle shadow-1-strong mr-2"
+                                         src="https://mdbcdn.b-cdn.net/img/new/avatars/5.webp"
+                                         alt="avatar" width="65"
+                                         height="65"/>
+                                    <div class="flex-grow-1 flex-shrink-1">
+                                        <div>
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <p class="mb-1">
+                                                    {{ comment.user.userIdentifier }}
+                                                    <span class="small">- {{ comment.createdAt|ago }}  </span>
+                                                </p>
+                                            </div>
+                                            <p class="small mb-0">
+                                                {% if comment.isDeleted == true %}
+                                                <i> *This commentary was deleted by moderator* </i>
+                                                {% else %}
+                                                {{ comment.content }}
+                                            </p>
+                                            <div class="js-likes-unlikes">
+                                                <a href="{{ path('app_comment_like_unlike') }}"
+                                                   id="comment-like"
+                                                   data-entity-id="{{ comment.id }}"
+                                                   data-csrf-token="{{ csrf_token('comment' ~ comment.id) }}"
+                                                   data-liked="{{ isCommentAlreadyLiked == true ? '1' : '0' }}"
+                                                   class="btn-like">
+                                                    <i class="♡ {{ isCommentAlreadyLiked == true ? 'liked' : '' }}">
+                                                        {{ isCommentAlreadyLiked == true ? '♥' : '♡' }}
+                                                    </i>
+                                                </a>
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}
+
+    {% block javascripts %}
+        {{ parent() }}
+        <script src="{{ asset('js/comments_like_unlike.js') }}"></script>
+    {% endblock %}

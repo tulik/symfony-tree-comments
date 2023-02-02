@@ -29,18 +29,26 @@
                                                         <i> *This commentary was deleted by moderator* </i>
                                                         {% else %}
                                                         {{ comment.content }}
+                                                        {% endif %}
                                                     </p>
+                                                    {% if app.user == true and comment.isDeleted == false %}
+                                                    {% set isAlreadyLikedComment = '' %}
+                                                        {% for like in comment.getCommentLikes %}
+                                                            {% set isAlreadyLikedComment = like.user.getId %}
+                                                        {% endfor %}
                                                     <div class="js-likes-unlikes">
                                                         <a href="{{ path('app_comment_like_unlike') }}"
                                                            id="comment-like"
                                                            data-entity-id="{{ comment.id }}"
                                                            data-csrf-token="{{ csrf_token('comment' ~ comment.id) }}"
-                                                           data-liked="{{ isCommentAlreadyLiked == true ? '1' : '0' }}"
+                                                           data-liked="{{ isAlreadyLikedComment == app.user.id ? '1' : '0' }}"
+                                                           data-likes-counter="{{ comment.commentLikes.count }}"
                                                            class="btn-like">
-                                                            <i class="♡ {{ isCommentAlreadyLiked == true ? 'liked' : '' }}">
-                                                                {{ isCommentAlreadyLiked == true ? '♥' : '♡' }}
+                                                            <i class="♡ {{ isAlreadyLikedComment == app.user.id ? 'liked' : '' }}">
+                                                                {{ isAlreadyLikedComment == app.user.id ? '♥' : '♡' }}
                                                             </i>
                                                         </a>
+                                                        <span class="counter small mb-0" id="count-likes-{{ comment.id }}">{{ comment.commentLikes.count }}</span>
                                                     </div>
                                                     {% endif %}
                                                 </div>
@@ -65,18 +73,25 @@
                                                                     <i> *This commentary was deleted by moderator* </i>
                                                                     {% else %}
                                                                     {{ child.content }}
+                                                                    {% endif %}
                                                                 </p>
+                                                                {% if app.user == true and child.isDeleted == false %}
+                                                                    {% set isAlreadyLikedChildComment = '' %}
+                                                                    {% for like in child.getCommentLikes %}
+                                                                        {% set isAlreadyLikedChildComment = like.user.getId %}
+                                                                    {% endfor %}
                                                                 <div class="js-likes-unlikes">
                                                                     <a href="{{ path('app_comment_like_unlike') }}"
                                                                        id="comment-like"
                                                                        data-entity-id="{{ child.id }}"
-                                                                       data-csrf-token="{{ csrf_token('comment' ~ comment.id) }}"
-                                                                       data-liked="{{ isCommentAlreadyLiked == true ? '1' : '0' }}"
+                                                                       data-csrf-token="{{ csrf_token('comment' ~ child.id) }}"
+                                                                       data-liked="{{ isAlreadyLikedChildComment == app.user.id ? '1' : '0' }}"
                                                                        class="btn-like">
-                                                                        <i class="♡ {{ isCommentAlreadyLiked == true ? 'liked' : '' }}">
-                                                                            {{ isCommentAlreadyLiked == true ? '♥' : '♡' }}
+                                                                        <i class="♡ {{ isAlreadyLikedChildComment == app.user.id ? 'liked' : '' }}">
+                                                                            {{ isAlreadyLikedChildComment == app.user.id ? '♥' : '♡' }}
                                                                         </i>
                                                                     </a>
+                                                                    <span class="counter small mb-0" id="count-likes-{{ child.id }}">{{ child.commentLikes.count }}</span>
                                                                 </div>
                                                                 {% endif %}
                                                             </div>
