@@ -44,7 +44,7 @@
                                                            data-liked="{{ userId == app.user.id ? '1' : '0' }}"
                                                            data-likes-counter="{{ comment.commentLikes.count }}"
                                                            class="btn-like">
-                                                            <i class="♡ {{ userId == app.user.id ? 'liked' : '' }}">
+                                                            <i class="♡-{{ comment.id }} {{ userId == app.user.id ? 'liked' : '' }}">
                                                                 {{ userId == app.user.id ? '♥' : '♡' }}
                                                             </i>
                                                         </a>
@@ -87,7 +87,7 @@
                                                                        data-csrf-token="{{ csrf_token('comment' ~ child.id) }}"
                                                                        data-liked="{{ uid == app.user.id ? '1' : '0' }}"
                                                                        class="btn-like">
-                                                                        <i class="♡ {{ uid == app.user.id ? 'liked' : '' }}">
+                                                                        <i class="♡-{{ child.id }} {{ uid == app.user.id ? 'liked' : '' }}">
                                                                             {{ uid == app.user.id ? '♥' : '♡' }}
                                                                         </i>
                                                                     </a>
@@ -99,12 +99,10 @@
                                                         <div class="ml-1">
                                                             <a href="javascript:void(0)"
                                                                onclick="document.getElementById('formreply-{{ child.getId }}').style.display='';">
-                                                                <i class="fas fa-reply fa-xs"></i>
                                                                 <span class="small"> reply</span>
                                                             </a>
                                                             {% if is_granted('ROLE_ADMIN') %}
                                                                 <a href="{{ path('delete_comment',{'id': child.getId }) }}">
-                                                                    <i class="fas fa-reply fa-xs"></i>
                                                                     <span class="small"> delete</span>
                                                                 </a>
                                                             {% endif %}
@@ -157,11 +155,9 @@
                                             <div class="ml-1">
                                                 <a href="javascript:void(0)"
                                                    onclick="document.getElementById('formreply-{{ comment.getId }}').style.display='';">
-                                                    <i class="fas fa-reply fa-xs"></i>
                                                     <span class="small">reply</span>
                                                     {% if is_granted('ROLE_ADMIN') %}
                                                         <a href="{{ path('delete_comment',{'id': comment.getId }) }}">
-                                                            <i class="fas fa-reply fa-xs"></i>
                                                             <span class="small"> delete</span>
                                                         </a>
                                                     {% endif %}
@@ -178,9 +174,11 @@
                             <div class="form-group">
                                 {{ form_label(form.content, 'Your Commentary') }}
                                 <textarea class="form-control"
-                                          name="{{ field_name(form.content) }}) }}"
-                                          rows="2">
+                                          name="{{ field_name(form.content) }}"
+                                          rows="2"
+                                          required>
                             </textarea>
+                                {{ form_errors(form.content) }}
                             </div>
                             <div class="submit">
                                 <input class="btn btn-primary"

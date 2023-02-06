@@ -11,10 +11,10 @@ $(document).on('click', '#comment-like', function (e) {
 
     if (isLiked === '0') {
         $(this).attr('data-liked', 1);
-        $('.♡').addClass('liked').text('♥')
+        $('.♡-' + entityId).addClass('liked').text('♥')
     } else {
         $(this).attr('data-liked', 0);
-        $('.♡').removeClass('liked').text('♡')
+        $('.♡-' + entityId).removeClass('liked').text('♡')
     }
 
     //sending this data to CommentLikeController
