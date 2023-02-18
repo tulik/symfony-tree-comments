@@ -25,7 +25,7 @@ class CommentLikeController extends AbstractController
             $commentId = $request->request->get('entityId');
 
             //check if comment exists
-            $comment = $entityManager->getRepository(Comment::class)->findOneBy(['id'=> $commentId]);
+            $comment = $entityManager->getRepository(Comment::class)->find(['id'=> $commentId]);
 
             // return void if not
             if (!$comment){
@@ -62,4 +62,5 @@ class CommentLikeController extends AbstractController
         }
         return $this->json(['countLikes' => $like->getComment()->getCommentLikes()->count()]);
     }
+
 }

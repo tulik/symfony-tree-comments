@@ -16,19 +16,19 @@ class CommentLike
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private $id;
+    private int $id;
 
     /**
      * @ORM\ManyToOne(targetEntity=Comment::class, inversedBy="commentLikes")
      * @ORM\JoinColumn(nullable=false)
      */
-    private $comment;
+    private Comment $comment;
 
     /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="commentLikes")
      * @ORM\JoinColumn(nullable=false)
      */
-    private $user;
+    private User $user;
 
     public function getId(): ?int
     {

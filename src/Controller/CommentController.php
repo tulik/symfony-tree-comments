@@ -9,7 +9,6 @@ use App\Form\CommentType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormInterface;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -19,68 +18,70 @@ use Symfony\Component\Security\Core\User\UserInterface;
 class CommentController extends AbstractController
 {
 
+    private EntityManagerInterface $entityManager;
+
+    public function __construct(EntityManagerInterface $entityManager)
+    {
+        $this->entityManager = $entityManager;
+
+    }
+
     /**
      * @Route("/comments", name="app_comments")
      */
-    public function indexAction(Request $request, EntityManagerInterface $entityManager): Response
+    public function indexAction(Request $request): Response
     {
 
         $user = $this->getUser();
 
         $comment = new Comment();
 
-        $commentForm = $this->commentForm($request, $comment);
+        $commentForm = $this->createForm(CommentType::class, $comment);
+
+        $commentForm->handleRequest($request);
 
         if ($commentForm->isSubmitted() && $commentForm->isValid()) {
-            $this->addComment($commentForm, $comment, $user, $entityManager, $_POST['parent_id'] ?? null);
+            $this->addComment($comment, $user, $request->request->get('parent_id') ?? null);
 
             $this->addFlash('success', 'Commentary added');
 
             return $this->redirectToRoute('app_comments');
         }
 
-        $allComments = $this->getComments($entityManager);
+        $allComments = $this->entityManager->getRepository(Comment::class)->findAll();
 
         $sortedComments = $this->sortComments($allComments);
 
-        return $this->renderForm('comments/index.html.twig',[
+//        dd($sortedComments);
+
+        return $this->renderForm('comments/index.html.twig', [
             'form' => $commentForm,
             'sortedComments' => $sortedComments,
         ]);
 
     }
 
-    private function getComments(EntityManagerInterface $entityManager): array
-    {
-        return $allComments = $entityManager->getRepository(Comment::class)->findAll();
-    }
-
-    public function addComment(FormInterface $form, Comment $comment, $user,
-                               EntityManagerInterface $entityManager, ?int $parentId = null): void
+    public function addComment(Comment $comment, ?UserInterface $user, ?int $parentId = null): void
     {
 
         $comment->setUser($user);
-        $comment->setCreatedAt(new \DateTime());
-        $comment->setParentId($_POST['parent_id'] ?? null);
-        $comment->setIsDeleted(0);
-        $comment = $form->getData();
+        $comment->setParentId($parentId);
 
-        $entityManager->persist($comment);
-        $entityManager->flush();
+        $this->entityManager->persist($comment);
+        $this->entityManager->flush();
 
     }
 
     /**
-     * @Route("/comments/delete/{id}", name="delete_comment")
+     * @Route("/admin/comments/delete/{id}", name="delete_comment")
      */
-    public function deleteComment($id, EntityManagerInterface $entityManager): Response
+    public function deleteComment(int $id, EntityManagerInterface $entityManager): Response
     {
-        //for Admins use only
+
         $comment = $entityManager->getRepository(Comment::class)->find($id);
 
         $comment->setIsDeleted(1);
 
-        $entityManager->persist($comment);
         $entityManager->flush();
 
         $this->addFlash('success', 'Deleted successfully');
@@ -107,91 +108,6 @@ class CommentController extends AbstractController
         return $arr;
 
     }
-
-    public function commentForm(Request $request, Comment $comment): FormInterface
-    {
-
-        $form = $this->createForm(CommentType::class, $comment);
-
-        $form->handleRequest($request);
-
-        return $form;
-
-    }
-
-//    /**
-//     * @Route("/comments/like/{id}", name="app_comments_like")
-//     */
-//    public function showArchived(Comment $comment, EntityManagerInterface $em)
-//    {
-//        $user = $this->getUser();
-//
-//        $isCommentAlreadyLiked =
-//            $em->getRepository(CommentLike::class)->countByCommentAndUser($comment, $user);
-//
-//        return $this->render('comment_like/index.html.twig', [
-//            'comment' => $comment,
-//            'isCommentAlreadyLiked' => $isCommentAlreadyLiked
-//        ]);
-//
-//    }
-//    public function addComment(Request $request, EntityManagerInterface $entityManager, array $sortedComments, ?int $parentId = null): Response
-//    {
-//
-//        $comment = new Comment();
-//
-//        $form = $this->createForm(CommentType::class, $comment);
-//        $form->handleRequest($request);
-//
-//        $user = $this->getUser();
-//
-//        if ($form->isSubmitted() && $form->isValid()) {
-//
-//            $comment->setUser($user);
-//            $comment->setCreatedAt(new \DateTime());
-//            $comment->setParentId($_POST['parent_id'] ?? null);
-//            $comment = $form->getData();
-//
-//            $entityManager->persist($comment);
-//            $entityManager->flush();
-//
-//            return $this->redirectToRoute('app_comments');
-//        }
-//
-//        $isCommentAlreadyLiked =
-//            $entityManager->getRepository(CommentLike::class)->countByCommentAndUser($comment, $user);
-//
-//        return $this->renderForm('comments/index.html.twig', [
-//            'form' => $form,
-//            'sortedComments' => $sortedComments,
-//            'isCommentAlreadyLiked' => $isCommentAlreadyLiked,
-//        ]);
-//
-//    }
-
-//    /**
-//     * @Route("/comments/{id}/like/{direction<up>}", methods="POST")
-//     */
-//    public function commentLikeArchived($id, $direction): Response
-//    {
-//        if ($direction === 'up') {
-//            $currentLikesCount = rand(5, 10);
-//        }
-//
-//        return $this->json(['likes' => $currentLikesCount]);
-//
-//    }
-
-//    public function indexActionArchived(Request $request, EntityManagerInterface $entityManager): Response
-//    {
-//
-//        $allComments = $this->getComments($entityManager);
-//
-//        $sortedComments = $this->sortComments($allComments);
-//
-//        return $this->addComment($request, $entityManager, $sortedComments, $_POST['parent_id'] ?? null);
-//
-//    }
 
 }
 

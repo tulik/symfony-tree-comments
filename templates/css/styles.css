@@ -1,8 +1,0 @@
-body{
-    background: green;
-}
-
-.gradient-custom {
-    background: linear-gradient(to bottom right, rgba(79, 172, 254, 1), rgba(0,
-242, 254, 1))
-}

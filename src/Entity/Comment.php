@@ -29,14 +29,13 @@ class Comment
     /**
      * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank
-     * @Assert\Length(min=1)
      */
     private string $content;
 
     /**
      * @ORM\Column(type="datetime")
      */
-    private $createdAt;
+    private \DateTime $createdAt;
 
     /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="comment")
@@ -44,7 +43,7 @@ class Comment
      */
     private User $user;
 
-    private $children;
+    private $children;// onetomany as well or delete if not needed
 
     /**
      * @ORM\OneToMany(targetEntity=CommentLike::class, mappedBy="comment")
@@ -54,12 +53,14 @@ class Comment
     /**
      * @ORM\Column(type="boolean", options={"default": 0})
      */
-    private bool $isDeleted;
+    private int $isDeleted;
 
 
     public function __construct()
     {
         $this->commentLikes = new ArrayCollection();
+        $this->createdAt = new \DateTime();
+        $this->isDeleted = 0;
     }
 
     public function getId(): int
@@ -96,13 +97,6 @@ class Comment
         return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTimeInterface $createdAt): self
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
     public function getUser(): ?User
     {
         return $this->user;
@@ -133,29 +127,7 @@ class Comment
         return $this->commentLikes;
     }
 
-    public function addCommentLike(CommentLike $commentLike): self
-    {
-        if (!$this->commentLikes->contains($commentLike)) {
-            $this->commentLikes[] = $commentLike;
-            $commentLike->setComment($this);
-        }
-
-        return $this;
-    }
-
-    public function removeCommentLike(CommentLike $commentLike): self
-    {
-        if ($this->commentLikes->removeElement($commentLike)) {
-            // set the owning side to null (unless already changed)
-            if ($commentLike->getComment() === $this) {
-                $commentLike->setComment(null);
-            }
-        }
-
-        return $this;
-    }
-
-    public function isIsDeleted(): ?bool
+    public function isDeleted(): ?bool
     {
         return $this->isDeleted;
     }
