@@ -11,161 +11,13 @@
                             <div class="row">
                                 <div class="col">
                                     {% for comment in sortedComments %}
-                                        <div class="d-flex flex-start mb-4">
-                                            <a class="me-3" href="javascript:void(0)">
-                                                <img class="rounded-circle shadow-1-strong mr-2"
-                                                     src="https://mdbcdn.b-cdn.net/img/new/avatars/5.webp"
-                                                     alt="avatar" width="65"
-                                                     height="65"/>
-                                            </a>
-                                            <div class="flex-grow-1 flex-shrink-1">
-                                                <div class="parent-comment">
-                                                    <div class="d-flex justify-content-between align-items-center">
-                                                        <p class="mb-1">
-                                                            {{ comment.user.userIdentifier }}
-                                                            <span class="small">- {{ comment.createdAt|ago }}  </span>
-                                                        </p>
-                                                    </div>
-                                                    <p class="small mb-0">
-                                                        {% if comment.isDeleted == true %}
-                                                            <i> *This commentary was deleted by moderator* </i>
-                                                        {% else %}
-                                                            {{ comment.content }}
-                                                        {% endif %}
-                                                    </p>
-                                                    {% if is_granted('IS_AUTHENTICATED_FULLY') and comment.isDeleted == false %}
-                                                        {% set userId = '' %}
-                                                        {% for like in comment.getCommentLikes %}
-                                                            {% set userId = like.user.getId %}
-                                                        {% endfor %}
-                                                        <div class="js-likes-unlikes">
-                                                            <a href="{{ path('app_comment_like_unlike') }}"
-                                                               id="comment-like"
-                                                               data-entity-id="{{ comment.id }}"
-                                                               data-csrf-token="{{ csrf_token('comment' ~ comment.id) }}"
-                                                               data-liked="{{ userId == app.user.id ? '1' : '0' }}"
-                                                               data-likes-counter="{{ comment.commentLikes.count }}"
-                                                               class="btn-like">
-                                                                <i class="comment-like-{{ comment.id }}">
-                                                                    {{ userId == app.user.id ? '♥' : '♡' }}
-                                                                </i>
-                                                            </a>
-                                                            <span class="counter small mb-0"
-                                                                  id="count-likes-{{ comment.id }}">{{ comment.commentLikes.count }}</span>
-                                                        </div>
-                                                    {% endif %}
-                                                </div>
-                                                {% for child in comment.children %}
-                                                    <div class="d-flex flex-start mt-4">
-                                                        <a class="me-3" href="javascript:void(0)">
-                                                            <img class="rounded-circle shadow-1-strong mr-2"
-                                                                 src="https://mdbcdn.b-cdn.net/img/Photos/Avatars/img%20(32).webp"
-                                                                 alt="avatar"
-                                                                 width="65" height="65"/>
-                                                        </a>
-                                                        <div class="child-comment">
-                                                            <div class="d-flex justify-content-between align-items-center">
-                                                                <p class="mb-1">
-                                                                    {{ child.user.userIdentifier }}
-                                                                    <span class="small">- {{ child.createdAt|ago }} </span>
-                                                                </p>
-                                                            </div>
-                                                            <p class="small mb-0">
-                                                                {% if child.isDeleted == true %}
-                                                                    <i> *This commentary was deleted by moderator* </i>
-                                                                {% else %}
-                                                                    {{ child.content }}
-                                                                {% endif %}
-                                                            </p>
-                                                            {% if is_granted('IS_AUTHENTICATED_FULLY') and child.isDeleted == false %}
-                                                                {% set uid = '' %}
-                                                                {% for like in child.getCommentLikes %}
-                                                                    {% set uid = like.user.getId %}
-                                                                {% endfor %}
-                                                                <div class="js-likes-unlikes">
-                                                                    <a href="{{ path('app_comment_like_unlike') }}"
-                                                                       id="comment-like"
-                                                                       data-entity-id="{{ child.id }}"
-                                                                       data-csrf-token="{{ csrf_token('comment' ~ child.id) }}"
-                                                                       data-liked="{{ uid == app.user.id ? '1' : '0' }}"
-                                                                       class="btn-like">
-                                                                        <i class="♡-{{ child.id }} {{ uid == app.user.id ? 'liked' : '' }}">
-                                                                            {{ uid == app.user.id ? '♥' : '♡' }}
-                                                                        </i>
-                                                                    </a>
-                                                                    <span class="counter small mb-0"
-                                                                          id="count-likes-{{ child.id }}">{{ child.commentLikes.count }}</span>
-                                                                </div>
-                                                            {% endif %}
-                                                        </div>
-                                                        <div class="ml-1">
-                                                            <a href="javascript:void(0)"
-                                                               onclick="document.getElementById('formreply-{{ child.getId }}').style.display='';">
-                                                                <span class="small"> reply</span>
-                                                            </a>
-                                                            {% if is_granted('ROLE_ADMIN') %}
-                                                                <a href="{{ path('delete_comment',{'id': child.getId }) }}">
-                                                                    <span class="small"> delete</span>
-                                                                </a>
-                                                            {% endif %}
-                                                        </div>
-                                                    </div>
-                                                    {% set formAttrs = ['m2 pb-2', 'formreply-' ~ child.getId, 'display: none !important;', 'formreply-' ~ comment.getId] %}
-                                                    {% if app.user == true %}
-                                                        <div class="reply-form">
-                                                            {{ form_start(form, {'attr': {'class': formAttrs.0, 'id': formAttrs.1, 'style': formAttrs.2 }}) }}
-                                                            <div class="form-group">
-                                                                {{ form_label(form.content, 'Your Commentary') }}
-                                                                <textarea class="form-control"
-                                                                          name="{{ field_name(form.content) }}">@{{ child.user.userIdentifier }}, </textarea>
-                                                            </div>
-                                                            <div class="submit">
-                                                                <input class="btn btn-primary"
-                                                                       name="{{ field_name(form.submit) }}"
-                                                                       type="submit"
-                                                                       value="Submit">
-                                                            </div>
-                                                            <input type="hidden"
-                                                                   name="parent_id"
-                                                                   value="{{ comment.getId }}">
-                                                            {{ form_end(form) }}
-                                                        </div>
-                                                    {% endif %}
-                                                {% endfor %}
-                                                {% set formAttr = ['m2 pb-2', 'formreply-' ~ comment.getId, 'display: none !important;'] %}
-                                                {% if app.user == true %}
-                                                    <div class="reply-form">
-                                                        {{ form_start(form, {'attr': {'class': formAttr.0, 'id': formAttr.1, 'style': formAttr.2 }}) }}
-                                                        <div class="form-group">
-                                                            {{ form_label(form.content, 'Your Commentary') }}
-                                                            <textarea class="form-control"
-                                                                      name="{{ field_name(form.content) }}">@{{ comment.user.userIdentifier }}, </textarea>
-                                                        </div>
-                                                        <div class="submit">
-                                                            <input class="btn btn-primary"
-                                                                   name="{{ field_name(form.submit) }}"
-                                                                   type="submit"
-                                                                   value="Submit">
-                                                        </div>
-                                                        <input type="hidden"
-                                                               name="parent_id"
-                                                               value="{{ comment.getId }}">
-                                                        {{ form_end(form) }}
-                                                    </div>
-                                                {% endif %}
+                                        {% set templateAttrs = [comment.getId, asset('avatars/avatar-6.webp'), asset('avatars/avatar-7.webp')] %}
+                                        {% include 'comments/comment.html.twig' with { comment: comment, commentIdValue: templateAttrs.0, userImage: templateAttrs.1} %}
+                                        {% for child in comment.children %}
+                                            <div class="mt-3 ml-5">
+                                                {% include 'comments/comment.html.twig' with { comment: child, commentIdValue: templateAttrs.0, userImage: templateAttrs.2} %}
                                             </div>
-                                            <div class="ml-1">
-                                                <a href="javascript:void(0)"
-                                                   onclick="document.getElementById('formreply-{{ comment.getId }}').style.display='';">
-                                                    <span class="small">reply</span>
-                                                    {% if is_granted('ROLE_ADMIN') %}
-                                                        <a href="{{ path('delete_comment',{'id': comment.getId }) }}">
-                                                            <span class="small"> delete</span>
-                                                        </a>
-                                                    {% endif %}
-                                                </a>
-                                            </div>
-                                        </div>
+                                        {% endfor %}
                                         <hr>
                                     {% endfor %}
                                 </div>
@@ -179,7 +31,7 @@
                                           name="{{ field_name(form.content) }}"
                                           rows="2"
                                           required>
-                            </textarea>
+                                </textarea>
                                 {{ form_errors(form.content) }}
                             </div>
                             <div class="submit">
@@ -199,6 +51,8 @@
                 </div>
             </div>
         </div>
+        <script>
+        </script>
     </section>
 {% endblock %}
 
