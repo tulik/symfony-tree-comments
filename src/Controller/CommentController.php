@@ -3,12 +3,10 @@
 namespace App\Controller;
 
 use App\Entity\Comment;
-use App\Entity\CommentLike;
-use App\Entity\User;
+use App\Form\ChildCommentType;
 use App\Form\CommentType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -40,7 +38,12 @@ class CommentController extends AbstractController
 
         $commentForm->handleRequest($request);
 
-        if ($commentForm->isSubmitted() && $commentForm->isValid()) {
+        $childForm = $this->createForm(ChildCommentType::class, $comment);
+
+        $childForm->handleRequest($request);
+
+        if ($commentForm->isSubmitted() && $commentForm->isValid() || $childForm->isSubmitted() && $childForm->isValid()) {
+
             $this->addComment($comment, $user, $request->request->get('parent_id') ?? null);
 
             $this->addFlash('success', 'Commentary added');
@@ -52,10 +55,9 @@ class CommentController extends AbstractController
 
         $sortedComments = $this->sortComments($allComments);
 
-//        dd($sortedComments);
-
         return $this->renderForm('comments/index.html.twig', [
             'form' => $commentForm,
+            'childForm' => $childForm,
             'sortedComments' => $sortedComments,
         ]);
 
@@ -75,14 +77,14 @@ class CommentController extends AbstractController
     /**
      * @Route("/admin/comments/delete/{id}", name="delete_comment")
      */
-    public function deleteComment(int $id, EntityManagerInterface $entityManager): Response
+    public function deleteComment(int $id): Response
     {
 
-        $comment = $entityManager->getRepository(Comment::class)->find($id);
+        $comment = $this->entityManager->getRepository(Comment::class)->find($id);
 
         $comment->setIsDeleted(1);
 
-        $entityManager->flush();
+       $this->entityManager->flush();
 
         $this->addFlash('success', 'Deleted successfully');
 

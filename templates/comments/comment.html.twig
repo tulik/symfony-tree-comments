@@ -1,0 +1,80 @@
+<div class="d-flex flex-start mb-1">
+    <a class="me-3" href="javascript:void(0)">
+        <img class="rounded-circle shadow-1-strong mr-2"
+             src="{{ userImage }}" alt="Random Image" width="65"
+             height="65"/>
+    </a>
+    <div class="flex-grow-1 flex-shrink-1">
+        <div class="col-11 p-0 d-inline-block comment">
+            <div class="d-flex justify-content-between align-items-center">
+                <p class="mb-1">
+                    {{ comment.user.userIdentifier }}
+                    <span class="small">- {{ comment.createdAt|ago }}  </span>
+                </p>
+            </div>
+            <p class="small mb-0">
+                {% if comment.isDeleted == true %}
+                    <i> *This commentary was deleted by moderator* </i>
+                {% else %}
+                    {{ comment.content }}
+                {% endif %}
+            </p>
+            {% if is_granted('IS_AUTHENTICATED_FULLY') and comment.isDeleted == false %}
+                {% set isAlreadyLikedComment = '' %}
+                {% for like in comment.getCommentLikes %}
+                    {% set isAlreadyLikedComment = like.user.getId %}
+                {% endfor %}
+                <div class="js-likes-unlikes">
+                    <a href="{{ path('app_comment_like_unlike') }}"
+                       id="comment-like"
+                       data-entity-id="{{ comment.id }}"
+                       data-csrf-token="{{ csrf_token('comment' ~ comment.id) }}"
+                       data-liked="{{ isAlreadyLikedComment == app.user.id ? '1' : '0' }}"
+                       data-likes-counter="{{ comment.commentLikes.count }}"
+                       class="btn-like">
+                        <i class="comment-like-{{ comment.id }}">
+                            {{ isAlreadyLikedComment == app.user.id ? '♥' : '♡' }}
+                        </i>
+                    </a>
+                    <span class="counter small mb-0"
+                          id="count-likes-{{ comment.id }}">{{ comment.commentLikes.count }}</span>
+                </div>
+        </div>
+        <div class="col-1 p-0 float-right d-flex align-items-center flex-column">
+            <a href="javascript:void(0)"
+               onclick="document.getElementById('formreply-{{ comment.getId }}').style.display='';">
+                <span class="small">reply</span>
+                {% if is_granted('ROLE_ADMIN') %}
+                    <a href="{{ path('delete_comment',{'id': comment.getId }) }}">
+                        <span class="small"> delete</span>
+                    </a>
+                {% endif %}
+            </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% set formAttrs = ['m2 pb-2', 'formreply-' ~ comment.getId, 'display: none !important;'] %}
+    {% if app.user == true %}
+<div class="d-flex flex-column">
+    <div class="flex-grow-1 flex-shrink-1 reply-form">
+        {{ form_start(childForm, {'attr': {'class': formAttrs.0, 'id': formAttrs.1, 'style': formAttrs.2 }}) }}
+        <div class="form-group">
+            {{ form_label(childForm.content, 'Your Commentary') }}
+            <textarea class="form-control"
+                      name="{{ field_name(childForm.content) }}">@{{ comment.user.userIdentifier }}, </textarea>
+        </div>
+        <div class="submit">
+            <input class="btn btn-primary"
+                   name="{{ field_name(childForm.submit) }}"
+                   type="submit"
+                   value="Submit">
+        </div>
+        <input type="hidden"
+               name="parent_id"
+               value="{{ commentIdValue }}">
+        {{ form_end(childForm) }}
+    </div>
+    {% endif %}
+</div>
+

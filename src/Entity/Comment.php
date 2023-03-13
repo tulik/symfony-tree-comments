@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use App\Entity\CommentLike;
+use Doctrine\ORM\PersistentCollection;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -43,7 +44,7 @@ class Comment
      */
     private User $user;
 
-    private $children;// onetomany as well or delete if not needed
+    private $children;
 
     /**
      * @ORM\OneToMany(targetEntity=CommentLike::class, mappedBy="comment")

@@ -3,33 +3,28 @@ $(document).on('click', '#comment-like', function (e) {
     //prevent the link from following the url
     e.preventDefault();
 
-    var url = $(this).attr('href');
-    var entityId = $(this).attr('data-entity-id');
-    var csrfToken = $(this).attr('data-csrf-token');
-    var isLiked = $(this).attr('data-liked');
-    var likesCounter = $(this).attr('data-likes-counter');
-
-    if (isLiked === '0') {
-        $(this).attr('data-liked', 1);
-        $('.♡-' + entityId).addClass('liked').text('♥')
-    } else {
-        $(this).attr('data-liked', 0);
-        $('.♡-' + entityId).removeClass('liked').text('♡')
-    }
+    let url = $(this).attr('href');
+    let entityId = $(this).attr('data-entity-id');
+    let csrfToken = $(this).attr('data-csrf-token');
 
     //sending this data to CommentLikeController
     $.ajax({
         type: 'POST',
         dataType: 'json',
-        data: {'entityId': entityId, 'csrfToken': csrfToken, 'likesCounter': likesCounter},
+        data: {'entityId': entityId, 'csrfToken': csrfToken},
         url: url,
         success: function (response) {
-            // countLikes is returned in json response from CommentLikeController
+            // countLikes and isLiked is returned in json response from CommentLikeController
+            if (response['isLiked'] === 0) {
+                $(this).attr('data-liked', 1);
+                $('.comment-like-' + entityId).text('♥')
+            } else {
+                $(this).attr('data-liked', 0);
+                $('.comment-like-' + entityId).text('♡')
+            }
             $('#count-likes-' + entityId).text(response['countLikes']);
-            console.log("success")
         },
         error: function () {
         }
     });
 });
-

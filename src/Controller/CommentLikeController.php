@@ -25,7 +25,7 @@ class CommentLikeController extends AbstractController
             $commentId = $request->request->get('entityId');
 
             //check if comment exists
-            $comment = $entityManager->getRepository(Comment::class)->find(['id'=> $commentId]);
+            $comment = $entityManager->getRepository(Comment::class)->find($commentId);
 
             // return void if not
             if (!$comment){
@@ -47,7 +47,7 @@ class CommentLikeController extends AbstractController
                 if($commentAlreadyLiked){
                     $entityManager->remove($commentAlreadyLiked);
                     $entityManager->flush();
-                    return $this->json(['countLikes' => $comment->getCommentLikes()->count()]);
+                    return $this->json(['countLikes' => $comment->getCommentLikes()->count(), 'isLiked' => 1]);
                     // if user likes the comment, add record to DB
                 } else{
                     $like = new CommentLike();
@@ -60,7 +60,7 @@ class CommentLikeController extends AbstractController
             }
 
         }
-        return $this->json(['countLikes' => $like->getComment()->getCommentLikes()->count()]);
+        return $this->json(['countLikes' => $like->getComment()->getCommentLikes()->count(), 'isLiked' => 0]);
     }
 
 }
