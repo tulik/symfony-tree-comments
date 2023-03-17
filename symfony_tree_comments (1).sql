@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: 127.0.0.1
--- Время создания: Дек 23 2022 г., 10:58
+-- Время создания: Мар 13 2023 г., 17:14
 -- Версия сервера: 10.4.24-MariaDB
 -- Версия PHP: 7.4.29
 
@@ -32,32 +32,23 @@ CREATE TABLE `comment` (
   `user_id` int(11) NOT NULL,
   `parent_id` int(11) DEFAULT NULL,
   `content` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `created_at` datetime NOT NULL
+  `created_at` datetime NOT NULL,
+  `is_deleted` tinyint(1) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Дамп данных таблицы `comment`
 --
 
-INSERT INTO `comment` (`id`, `user_id`, `parent_id`, `content`, `created_at`) VALUES
-(112, 17, NULL, 'Full how way even the sigh. Extremely nor furniture fat questions now provision incommode preserved.', '2022-10-27 00:05:07'),
-(113, 15, 112, '@Tommy Vercetti Sudden up my excuse to suffer ladies though or. Bachelor possible marianne directly confined relation as on he.', '2022-10-27 00:09:01'),
-(114, 16, 112, '@Tommy Vercetti Abilities or he perfectly pretended so strangers be exquisite. Oh to another chamber pleased imagine do in.', '2022-10-27 00:09:36'),
-(115, 16, NULL, 'Removal request delight if on he we. Unaffected in we by apartments astonished to decisively themselves. Offended ten old consider speaking.', '2022-10-27 00:28:05'),
-(116, 15, NULL, 'Now led tedious shy lasting females off. Dashwood marianne in of entrance be on wondered possible building. Wondered sociable he carriage in speedily margaret.', '2022-10-27 00:28:50'),
-(117, 17, 116, '@Carl Johnson Up devonshire of he thoroughly insensible alteration. An mr settling occasion insisted distance ladyship so.', '2022-10-27 00:29:48'),
-(138, 18, NULL, 'Dashwood marianne in of entrance be on wondered possible building. Wondered sociable he carriage in speedily margaret.', '2022-10-30 17:25:41'),
-(139, 18, 116, '@Tommy Vercetti, devonshire of he thoroughly insensible alteration. An mr settling occasion insisted distance ladyship so.', '2022-10-30 17:25:57'),
-(140, 17, 112, '@Sara Parker, he perfectly pretended so strangers be exquisite. Oh to another chamber pleased imagine do in.', '2022-11-03 00:09:05'),
-(141, 18, 115, '@Sara Parker, in we by apartments astonished to decisively themselves. Offended ten old consider speaking.', '2022-11-03 00:09:53'),
-(142, 18, 116, '@Carl Johnson,  in we by apartments astonished to decisively themselves. Offended ten old consider speaking.', '2022-11-03 00:10:01'),
-(143, 18, 116, '@Tommy Vercetti, astonished to decisively themselves. Offended ten old consider speaking.', '2022-11-03 00:11:22'),
-(167, 20, NULL, 'Devonshire of he thoroughly insensible alteration. An mr settling occasion insisted distance ladyship so.', '2022-12-06 20:42:41'),
-(168, 15, 167, '@Alex Alex, marianne in of entrance be on wondered possible building. Wondered sociable he carriage in speedily margaret.', '2022-12-06 20:43:19'),
-(222, 18, NULL, 'р', '2022-12-22 16:16:59'),
-(223, 18, NULL, 'р', '2022-12-22 16:17:04'),
-(224, 18, NULL, '123', '2022-12-23 10:54:06'),
-(225, 18, NULL, '123', '2022-12-23 10:54:10');
+INSERT INTO `comment` (`id`, `user_id`, `parent_id`, `content`, `created_at`, `is_deleted`) VALUES
+(432, 18, NULL, 'Full how way even the sigh. Extremely nor furniture fat questions now provision incommode preserved.', '2023-03-10 00:12:59', 0),
+(433, 16, 432, '@Bob Echo, Sudden up my excuse to suffer ladies though or. Bachelor possible marianne directly confined relation as on he.', '2023-03-10 00:13:29', 0),
+(434, 20, 432, '@Sara Parker, Abilities or he perfectly pretended so strangers be exquisite. Oh to another chamber pleased imagine do in', '2023-03-10 00:13:56', 0),
+(435, 17, NULL, 'He perfectly pretended so strangers be exquisite. Oh to another chamber pleased imagine do in.', '2023-03-10 00:14:21', 0),
+(436, 15, 435, '@Tommy Vercetti, in we by apartments astonished to decisively themselves. Offended ten old consider speaking.', '2023-03-10 00:15:20', 1),
+(437, 15, NULL, 'Devonshire of he thoroughly insensible alteration. An mr settling occasion insisted distance ladyship so. looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum sociable he carriage in speedily margaret.', '2023-03-10 00:15:49', 0),
+(438, 18, NULL, 'Now led tedious shy lasting females off. Dashwood marianne in of entrance be on wondered possible building. Wondered sociable he carriage in speedily margaret.', '2023-03-10 00:16:44', 0),
+(439, 20, 437, '@Carl Johnson, removal request delight if on he we. Unaffected in we by apartments astonished to decisively themselves. Offended ten old consider speaking.', '2023-03-10 00:17:13', 0);
 
 -- --------------------------------------------------------
 
@@ -76,16 +67,43 @@ CREATE TABLE `comment_like` (
 --
 
 INSERT INTO `comment_like` (`id`, `comment_id`, `user_id`) VALUES
-(3, 138, 15),
-(5, 166, 15),
-(7, 160, 16),
-(19, 115, 18),
-(20, 112, 18),
-(226, 116, 15),
-(268, 112, 20),
-(271, 167, 15),
-(272, 115, 15),
-(306, 112, 16);
+(714, 112, 21),
+(716, 141, 21),
+(740, 342, 20),
+(741, 112, 17),
+(810, 115, 18),
+(857, 113, 23),
+(862, 342, 23),
+(863, 112, 23),
+(864, 112, 14),
+(865, 113, 14),
+(866, 114, 14),
+(895, 112, 16),
+(900, 387, 24),
+(901, 389, 24),
+(902, 393, 24),
+(908, 390, 15),
+(1024, 390, 18),
+(1029, 342, 15),
+(1148, 113, 15),
+(1158, 114, 18),
+(1205, 113, 18),
+(1216, 112, 15),
+(1219, 115, 15),
+(1223, 112, 18),
+(1227, 432, 16),
+(1228, 433, 16),
+(1229, 432, 20),
+(1230, 433, 20),
+(1231, 432, 17),
+(1232, 434, 17),
+(1233, 433, 15),
+(1234, 432, 15),
+(1235, 435, 15),
+(1239, 435, 18),
+(1241, 433, 18),
+(1242, 432, 18),
+(1246, 434, 18);
 
 -- --------------------------------------------------------
 
@@ -106,8 +124,6 @@ CREATE TABLE `doctrine_migration_versions` (
 INSERT INTO `doctrine_migration_versions` (`version`, `executed_at`, `execution_time`) VALUES
 ('DoctrineMigrations\\Version20220912235025', '2022-09-13 01:51:01', 225),
 ('DoctrineMigrations\\Version20220925201632', '2022-09-25 22:19:24', 1455),
-('DoctrineMigrations\\Version20220926214229', '2022-09-26 23:43:04', 2413),
-('DoctrineMigrations\\Version20220926220510', '2022-09-27 00:06:04', 2479),
 ('DoctrineMigrations\\Version20221127151420', '2022-11-27 16:25:31', 2355);
 
 -- --------------------------------------------------------
@@ -159,9 +175,12 @@ INSERT INTO `user` (`id`, `email`, `roles`, `password`, `name`) VALUES
 (15, 'cj@gmail.com', '[\"ROLE_USER\"]', '$2y$13$eapi.2WkAgRa4gGslGJwTui1zQa17GCnB0sH2u0NAXMOcqiuICeoS', 'Carl Johnson'),
 (16, 'sara@gmail.com', '[\"ROLE_USER\"]', '$2y$13$OyG4KvBpduKfYw0TH6U5/eUYARWDtl7UeQKnMxOX9x21EOam02DE6', 'Sara Parker'),
 (17, 'tommy@gmail.com', '[\"ROLE_USER\"]', '$2y$13$IF6dm6V9pYhpRV7j9dUDiOuATxgtmci9g5ExLgiAN1XSnpme9FC8m', 'Tommy Vercetti'),
-(18, 'bob@gmail.com', '[\"ROLE_USER\"]', '$2y$13$7JkZ8kmpHcF3T/3IvXWQBeTNWuR8VkTndGOxR.oof8WNY3l2HOL6i', 'Bob Echo'),
+(18, 'bob@gmail.com', '[\"ROLE_ADMIN\"]', '$2y$13$7JkZ8kmpHcF3T/3IvXWQBeTNWuR8VkTndGOxR.oof8WNY3l2HOL6i', 'Bob Echo'),
 (19, 'steve@gmail.com', '[\"ROLE_USER\"]', '$2y$13$3xeCB54bEhpp2iQLTftCXOzXLabKNeNqw7zgr4mDP2O5NTiiNSp6u', 'Steve Stevens'),
-(20, 'alex@gmail.com', '[\"ROLE_USER\"]', '$2y$13$/8anISGC4.kD/lEGMFQ9JeZLdE/ZoMtPbpexGjprr3W2YrL3sAKYu', 'Alex Alex');
+(20, 'alex@gmail.com', '[\"ROLE_USER\"]', '$2y$13$/8anISGC4.kD/lEGMFQ9JeZLdE/ZoMtPbpexGjprr3W2YrL3sAKYu', 'Alex Alex'),
+(21, 'dog@gmail.com', '[\"ROLE_USER\"]', '$2y$13$m.lxoMCN3PE3PL18S8.5LOBV7rKqKaaAUOYTgMfmLOoyAAvN6cHDG', 'Dodge'),
+(23, 'will@gmail.com', '[\"ROLE_USER\"]', '$2y$13$bPjVVYZQ6U9KvMUpv9cDy.RaXsT9izMcc8LHbhh5rC/mZVrdbA/Jy', 'Will Smith'),
+(24, 'rock@gmail.com', '[\"ROLE_USER\"]', '$2y$13$nIpQfy9Z3/4KkNweKWhPc.TCzotGHKBhhlnybJlI92x3MHiBpQeuG', 'Rock Rocky');
 
 --
 -- Индексы сохранённых таблиц
@@ -212,13 +231,13 @@ ALTER TABLE `user`
 -- AUTO_INCREMENT для таблицы `comment`
 --
 ALTER TABLE `comment`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=226;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=450;
 
 --
 -- AUTO_INCREMENT для таблицы `comment_like`
 --
 ALTER TABLE `comment_like`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=341;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1247;
 
 --
 -- AUTO_INCREMENT для таблицы `messenger_messages`
@@ -230,11 +249,17 @@ ALTER TABLE `messenger_messages`
 -- AUTO_INCREMENT для таблицы `user`
 --
 ALTER TABLE `user`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
 -- Ограничения внешнего ключа сохраненных таблиц
 --
+
+--
+-- Ограничения внешнего ключа таблицы `comment`
+--
+ALTER TABLE `comment`
+  ADD CONSTRAINT `FK_9474526CA76ED395` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`);
 
 --
 -- Ограничения внешнего ключа таблицы `comment_like`
