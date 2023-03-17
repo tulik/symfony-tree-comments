@@ -32,19 +32,32 @@ class CommentController extends AbstractController
 
         $user = $this->getUser();
 
-        $comment = new Comment();
+        $parentComment = new Comment();
+        $childComment = new Comment();
 
-        $commentForm = $this->createForm(CommentType::class, $comment);
+        $parentCommentForm = $this->createForm(CommentType::class, $parentComment, [
+            'csrf_token_id' => 'parent_comment_csrf_id',
+        ]);
 
-        $commentForm->handleRequest($request);
+        $childCommentForm = $this->createForm(CommentType::class, $childComment, [
+            'csrf_token_id' => 'child_comment_csrf_id',
+        ]);
 
-        $childForm = $this->createForm(ChildCommentType::class, $comment);
+        $parentCommentForm->handleRequest($request);
+        $childCommentForm->handleRequest($request);
 
-        $childForm->handleRequest($request);
+        if ($parentCommentForm->isSubmitted() && $parentCommentForm->isValid()) {
 
-        if ($commentForm->isSubmitted() && $commentForm->isValid() || $childForm->isSubmitted() && $childForm->isValid()) {
+            $this->addComment($parentComment, $user, $request->request->get('parent_id') ?? null);
 
-            $this->addComment($comment, $user, $request->request->get('parent_id') ?? null);
+            $this->addFlash('success', 'Commentary added');
+
+            return $this->redirectToRoute('app_comments');
+        }
+
+        if ($childCommentForm->isSubmitted() && $childCommentForm->isValid()) {
+
+            $this->addComment($childComment, $user, $request->request->get('parent_id') ?? null);
 
             $this->addFlash('success', 'Commentary added');
 
@@ -56,8 +69,8 @@ class CommentController extends AbstractController
         $sortedComments = $this->sortComments($allComments);
 
         return $this->renderForm('comments/index.html.twig', [
-            'form' => $commentForm,
-            'childForm' => $childForm,
+            'parentCommentForm' => $parentCommentForm,
+            'childCommentForm' => $childCommentForm,
             'sortedComments' => $sortedComments,
         ]);
 
@@ -84,7 +97,7 @@ class CommentController extends AbstractController
 
         $comment->setIsDeleted(1);
 
-       $this->entityManager->flush();
+        $this->entityManager->flush();
 
         $this->addFlash('success', 'Deleted successfully');
 
